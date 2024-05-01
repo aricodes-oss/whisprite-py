@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "whisprite"
+version = "0.1.0"
+description = ""
+authors = ["Aria Taylor <ari@aricodes.net>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+twitchio = "^2.9.1"
+peewee = "^3.17.3"
+python-dotenv = "^1.0.1"
+pluralizer = "^1.2.0"
+
+[tool.poetry.scripts]
+whisprite = "whisprite:main"
+watch = "whisprite.watch:main"
+
+[tool.poetry.group.dev.dependencies]
+watchfiles = "^0.21.0"
+bpython = "^0.24"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
