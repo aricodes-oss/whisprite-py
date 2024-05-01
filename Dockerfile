@@ -1,4 +1,5 @@
 FROM python:latest
+LABEL org.opencontainers.image.source https://github.com/aricodes-oss/whisprite-py
 
 RUN pip install --upgrade pip poetry
 WORKDIR /code
