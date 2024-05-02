@@ -1,5 +1,4 @@
-
-from peewee import CharField, ForeignKeyField, fn
+from peewee import CharField, ForeignKeyField, fn, DateTimeField
 from twitchio.ext.commands import Bot, Command, Context
 
 from whisprite.utils import pluralizer
@@ -12,7 +11,7 @@ class Collection(BaseModel):
     Represents a list of items that we keep track of.
     """
 
-    name: CharField = CharField(unique=True)
+    name = CharField(unique=True)
 
     @property
     def has_entries(self) -> bool:
@@ -41,8 +40,14 @@ class Collection(BaseModel):
             if not c.has_entries:
                 return await ctx.send(f"We don't have any {c.plural} yet :(")
 
-            entry = CollectionEntry.select().order_by(fn.Random()).limit(1).get()
-            author = (await self.fetch_users(ids=[entry.author]))[0].display_name
+            entry = (
+                CollectionEntry.select()
+                .where(CollectionEntry.collection == self)
+                .order_by(fn.Random())
+                .limit(1)
+                .get()
+            )
+            author = (await bot.fetch_users(ids=[entry.author]))[0].display_name
             await ctx.send(f"{entry.value} (submitted by {author})")
 
         async def del_handler(ctx: Context, content: str) -> None:
@@ -68,7 +73,7 @@ class Collection(BaseModel):
                 {"aliases": [f"add{c.singular}", f"create{c.singular}"]},
             ),
             (
-                f"{c.singular}",
+                c.singular,
                 find_handler,
                 {"aliases": [f"find{c.singular}", c.plural, f"random{c.singular}"]},
             ),
@@ -92,6 +97,7 @@ class CollectionEntry(BaseModel):
     Represents an entry in a collection
     """
 
-    collection: ForeignKeyField = ForeignKeyField(Collection, backref="entries")
-    value: CharField = CharField()
-    author: CharField = CharField()
+    collection = ForeignKeyField(Collection, backref="entries")
+    value = CharField()
+    author = CharField()
+    created_at = DateTimeField(null=True)
