@@ -21,7 +21,7 @@ class ChannelsMixin:
 
         try:
             Channel.create(username=user.name)
-            await self.join_channels(user.name)
+            await self.join_channels([user.name])
             return await ctx.send(f"Successfully joined channel {user.name}")
         except IntegrityError:
             return await ctx.send("We're already in their chat!")
