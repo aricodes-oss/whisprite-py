@@ -26,7 +26,7 @@ class ChannelsMixin:
         except IntegrityError:
             return await ctx.send("We're already in their chat!")
 
-    @commands.command(name="leave", aliases=["leavechannel"])
+    @commands.command(name="leave", aliases=["leavechannel", "part"])
     async def leave_command(
         self: commands.Bot,
         ctx: commands.Context,
