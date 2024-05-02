@@ -89,6 +89,10 @@ class Collection(BaseModel):
             if len(rest):
                 kwargs = rest[0]
 
+            # One special case here - we want to fuck with people trying to play Marbles
+            if name == "quote":
+                kwargs["aliases"].append("play")
+
             bot.add_command(Command(name, handler, **kwargs))
 
 
