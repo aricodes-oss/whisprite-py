@@ -35,7 +35,7 @@ class ChannelsMixin:
         if not ctx.author.is_broadcaster:
             return await ctx.send("Still nope!")
 
-        if not Channel.select().where(Channel.username == user.name).count:
+        if not Channel.select().where(Channel.username == user.name).count():
             return await ctx.send("We're not in their channel, dumbass")
 
         Channel.delete().where(Channel.username == user.name).execute()
