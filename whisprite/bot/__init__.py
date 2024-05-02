@@ -34,7 +34,8 @@ class Bot(commands.Bot, CollectionsMixin, CountersMixin, ChannelsMixin):
         if isinstance(error, commands.CommandNotFound):
             return
         elif isinstance(error, commands.BadArgument):
-            return await context.send(error.message)
+            msg = getattr(error, "message", default=str(error))
+            return await context.send(msg)
 
         await context.send(str(error))
 
