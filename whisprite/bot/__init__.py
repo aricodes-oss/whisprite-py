@@ -1,17 +1,25 @@
 from twitchio.ext import commands
 from twitchio.message import Message
 
+import inspect
+
 from .collections import CollectionsMixin
 from .counters import CountersMixin
+from .channels import ChannelsMixin
+
+from whisprite.db.models.channels import Channel
+from whisprite.utils import pluralizer
 
 
-class Bot(commands.Bot, CollectionsMixin, CountersMixin):
+class Bot(commands.Bot, CollectionsMixin, CountersMixin, ChannelsMixin):
     async def event_ready(self) -> None:
-        self.load_collections()
-        self.load_counters()
+        # Load all of our model commands on startup, with names like
+        # load_collections() or load_commands()
+        for name, func in inspect.getmembers(self, inspect.ismethod):
+            if name.startswith("load_") and pluralizer.isPlural(name):
+                func()
 
-        # TODO: load from database or something
-        await self.join_channels(["ariaverge"])
+        await self.join_channels([c.username for c in Channel.select()])
         print("Ret-2-go!")
 
     async def event_message(self, message: Message) -> None:

@@ -1,7 +1,7 @@
 from twitchio.ext import commands
 from peewee import IntegrityError
 
-from whisprite.db.models.counters import Counter, CounterTick
+from whisprite.db.models.counters import Counter
 
 COUNT_TOKEN = "{count}"
 

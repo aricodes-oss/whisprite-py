@@ -1,4 +1,3 @@
-from typing import Callable, Any, List, Tuple, Dict
 
 from peewee import CharField, ForeignKeyField, fn
 from twitchio.ext.commands import Bot, Command, Context
