@@ -8,6 +8,7 @@ COPY pyproject.toml poetry.lock .
 RUN poetry install --no-root --without dev
 
 # Get the project root after caching dependencies
+COPY README.md .
 COPY whisprite whisprite
 RUN poetry install --without dev
 
