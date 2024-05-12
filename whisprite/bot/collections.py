@@ -1,4 +1,5 @@
 from twitchio.ext import commands
+from twitchio.ext.commands.errors import TwitchCommandError
 from peewee import IntegrityError
 
 from whisprite.db.models.collections import Collection
@@ -25,7 +26,7 @@ class CollectionsMixin:
             inst = Collection.create(name=name)
             self.load_collection(inst)
             await ctx.send(f"Created a collection of {inst.plural}")
-        except IntegrityError:
+        except (IntegrityError, TwitchCommandError):
             await ctx.send(f"We already have a collection of {pluralizer.plural(name)}!")
 
     @commands.command(name="collections", aliases=["listcollections", "lists"])
