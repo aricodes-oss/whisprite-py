@@ -29,7 +29,7 @@ class Collection(BaseModel):
         c = self  # Shorthand, am lazy
 
         # Creating as closures to avoid polluting the model namespace
-        async def new_handler(ctx: Context, content: str) -> None:
+        async def new_handler(ctx: Context, *, content: str) -> None:
             if not ctx.author.is_mod:
                 return await ctx.reply("No!")
 
