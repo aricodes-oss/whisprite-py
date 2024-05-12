@@ -43,7 +43,10 @@ class CollectionsMixin:
 
     def load_collections(self: commands.Bot) -> None:
         for collection in Collection.select():
-            self.load_collection(collection)
+            try:
+                self.load_collection(collection)
+            except Exception as e:
+                print(f"Failed to load {collection.name}: {e}")
 
     def load_collection(self: commands.Bot, collection: Collection) -> None:
         collection.mount_handlers(self)
