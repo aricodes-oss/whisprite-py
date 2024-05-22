@@ -48,23 +48,23 @@ class Collection(BaseModel):
                 .get()
             )
             author = (await bot.fetch_users(ids=[entry.author]))[0].display_name
-            await ctx.send(f"{entry.value} (submitted by {author})")
+            await ctx.send(f"({entry.id}): {entry.value} (submitted by {author})")
 
-        async def del_handler(ctx: Context, content: str) -> None:
+        async def del_handler(ctx: Context, id: int) -> None:
             if not ctx.author.is_mod:
                 await ctx.reply("Uh...no.")
                 return
 
             rows_deleted = (
                 CollectionEntry.delete()
-                .where(CollectionEntry.value == content, CollectionEntry.collection == c)
+                .where(CollectionEntry.id == id, CollectionEntry.collection == c)
                 .execute()
             )
             if not rows_deleted:
                 await ctx.send("No entry found for that query!")
                 return
 
-            await ctx.send(f"Deleted {rows_deleted} {c.singular} matching {content}")
+            await ctx.send(f"Deleted {rows_deleted} {c.singular} matching {id}")
 
         mapping: CommandMapping = [
             (

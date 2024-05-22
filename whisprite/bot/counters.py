@@ -1,5 +1,5 @@
 from twitchio.ext import commands
-from peewee import IntegrityError
+from peewee import IntegrityError, fn
 
 from whisprite.db.models.counters import Counter
 
@@ -33,6 +33,19 @@ class CountersMixin:
             await ctx.send(f"Created a counter named {name}")
         except IntegrityError as e:
             await ctx.send(f"We already have a counter named {name}! [{str(e)}]")
+
+    @commands.command(name="delcounter", aliases=["rmcounter"])
+    async def del_counter(self: commands.Bot, ctx: commands.Context, name: str) -> None:
+        if not ctx.author.is_mod:
+            return await ctx.send("Seriously? No!")
+
+        name = name.lower()
+
+        rows_affected = Counter.delete().where(fn.LOWER(Counter.name) == name).execute()
+        if not rows_affected:
+            return await ctx.send("No matching counter found!")
+
+        await ctx.send(f"Successfully deleted counter {name}")
 
     def load_counters(self) -> None:
         for counter in Counter.select():
