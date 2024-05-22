@@ -1,5 +1,5 @@
 from twitchio.ext.commands import Bot, Command, Context
-from peewee import CharField, ForeignKeyField
+from peewee import CharField
 
 from .base import BaseModel
 

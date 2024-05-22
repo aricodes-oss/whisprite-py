@@ -2,13 +2,8 @@
 ### AND NOT BY THE END USER
 
 import argparse
-import asyncio
 import json
-from datetime import datetime
-import os
-from typing import List
 
-import twitchio
 from dotenv import load_dotenv
 
 from whisprite.db.models.commands import UserCommand, CommandAlias
