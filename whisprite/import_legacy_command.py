@@ -11,48 +11,26 @@ from typing import List
 import twitchio
 from dotenv import load_dotenv
 
-from whisprite.db.models.collections import Collection, CollectionEntry
+from whisprite.db.models.commands import UserCommand, CommandAlias
 
 load_dotenv()
 
 
 def _main(args: argparse.Namespace) -> None:
-    client = twitchio.Client(token=os.environ["TWITCH_ACCESS_TOKEN"])
-    collection = Collection.get(name=args.name)
-    records = []
+    commands = []
+    aliases = []
 
-    loop = asyncio.new_event_loop()
-    loop.run_until_complete(client.connect())
     with open(args.infile) as f:
         for line in f:
             data = json.loads(line.strip())
-            timestamp = (
-                datetime.fromtimestamp(data["timestamp"] / 1000)
-                if data["timestamp"] is not None
-                else None
-            )
 
-            user: List[twitchio.User] = loop.run_until_complete(
-                client.fetch_users(
-                    [data["author"] if data["author"] != "willowthewhispersr" else "ariaverge"]
-                )
-            )
+            commands.append(UserCommand(name=data["_id"], content=data["output"]))
 
-            if not len(user):
-                user = loop.run_until_complete(client.fetch_users(["whisprite"]))
+            for alias in data["aliases"]:
+                aliases.append(CommandAlias(name=alias, target=data["_id"]))
 
-            records.append(
-                CollectionEntry(
-                    collection=collection,
-                    value=data[args.key],
-                    created_at=timestamp,
-                    author=user[0].id,
-                )
-            )
-    loop.run_until_complete(client.close())
-    loop.close()
-
-    CollectionEntry.bulk_create(records)
+    UserCommand.bulk_create(commands)
+    CommandAlias.bulk_create(aliases)
 
 
 if __name__ == "__main__":
