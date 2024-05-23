@@ -36,17 +36,37 @@ class Collection(BaseModel):
             CollectionEntry.create(collection=c, author=ctx.author.id, value=content)
             await ctx.send(f"Successfully added new {c.singular}: {content}")
 
-        async def find_handler(ctx: Context) -> None:
+        async def find_handler(ctx: Context, number: int | None) -> None:
             if not c.has_entries:
                 return await ctx.send(f"We don't have any {c.plural} yet :(")
 
-            entry = (
-                CollectionEntry.select()
-                .where(CollectionEntry.collection == self)
-                .order_by(fn.Random())
-                .limit(1)
-                .get()
-            )
+            entry = None
+
+            # If we're given an ID, fetch it
+            if number is not None:
+                try:
+                    entry = (
+                        CollectionEntry.select()
+                        .where(
+                            (CollectionEntry.collection == self)
+                            & (CollectionEntry.id == number)
+                        )
+                        .limit(1)
+                        .get()
+                    )
+                except Exception as e:
+                    print(e)
+                    return await ctx.send(f"No matching {self.singular} found for #{number}")
+
+            # Otherwise get a random one
+            if entry is None:
+                entry = (
+                    CollectionEntry.select()
+                    .where(CollectionEntry.collection == self)
+                    .order_by(fn.Random())
+                    .limit(1)
+                    .get()
+                )
             author = (await bot.fetch_users(ids=[entry.author]))[0].display_name
             await ctx.send(f"({entry.id}): {entry.value} (submitted by {author})")
 
