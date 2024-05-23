@@ -113,5 +113,5 @@ class CommandsMixin:
             cmd.aliases = []
 
         cmd.aliases.append(alias.name)
-        self.remove_command(cmd)
+        self.remove_command(cmd.name)
         self.add_command(cmd)
