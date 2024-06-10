@@ -94,6 +94,24 @@ class CommandsMixin:
             alias.delete_instance()
             return await ctx.send(f"Failed to create alias {name} for {base_name}: {e}")
 
+    @commands.command(name="delalias", aliases=["rmalias"])
+    async def del_alias(self: commands.Bot, ctx: commands.Context, name: str) -> None:
+        if not ctx.author.is_mod:
+            return await ctx.send("Is Clifford the big red dog a kaiju?")
+
+        name = name.lower()
+        rows_affected = (
+            CommandAlias.delete().where(fn.LOWER(CommandAlias.name) == name).execute()
+        )
+        if not rows_affected:
+            return await ctx.send(f"Alias not found: {name}")
+
+        cmd = self.get_command(name)
+        cmd.aliases = [a for a in cmd.aliases if a != name]
+        self.reload_cmd(cmd)
+
+        await ctx.send(f"Successfully deleted alias {name}")
+
     def load_user_commands(self):
         for cmd in Command.select():
             self.load_user_command(cmd)
@@ -114,5 +132,8 @@ class CommandsMixin:
             cmd.aliases = []
 
         cmd.aliases.append(alias.name)
+        self.reload_cmd(cmd)
+
+    def reload_cmd(self, cmd: commands.Command) -> None:
         self.remove_command(cmd.name)
         self.add_command(cmd)
