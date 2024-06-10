@@ -86,11 +86,12 @@ class CommandsMixin:
         if cmd is None:
             return await ctx.send(f"No command found for name {name}")
 
+        alias = CommandAlias.create(target=cmd.name, name=name)
         try:
-            alias = CommandAlias.create(command=cmd, name=name)
             self.load_alias(alias)
             await ctx.send(f"Added alias {name} to command {cmd.name}")
         except Exception as e:
+            alias.delete_instance()
             return await ctx.send(f"Failed to create alias {name} for {base_name}: {e}")
 
     def load_user_commands(self):
@@ -101,7 +102,7 @@ class CommandsMixin:
         cmd.mount_handlers(self)
 
     def load_aliases(self):
-        for alias in CommandAlias.select():
+        for alias in CommandAlias.select().order_by(CommandAlias.id):
             self.load_alias(alias)
 
     def load_alias(self, alias: CommandAlias):
