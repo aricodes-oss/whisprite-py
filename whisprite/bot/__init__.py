@@ -24,7 +24,10 @@ class Bot(commands.Bot, CollectionsMixin, CountersMixin, ChannelsMixin, Commands
                     "aliases"
                 )  # We need to do this after all other commands have mounted
             ):
-                func()
+                try:
+                    func()
+                except Exception as e:
+                    print(f"Caught {e} trying to run {name}, ignoring")
 
         self.load_aliases()
         await self.join_channels([c.username for c in Channel.select()])
