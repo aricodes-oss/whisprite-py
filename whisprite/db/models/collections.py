@@ -33,8 +33,8 @@ class Collection(BaseModel):
             if not ctx.author.is_mod:
                 return await ctx.reply("No!")
 
-            CollectionEntry.create(collection=c, author=ctx.author.id, value=content)
-            await ctx.send(f"Successfully added new {c.singular}: {content}")
+            entry = CollectionEntry.create(collection=c, author=ctx.author.id, value=content)
+            await ctx.send(f"Successfully added {c.singular} #{entry.id}: {content}")
 
         async def find_handler(ctx: Context, number: int | None) -> None:
             if not c.has_entries:
